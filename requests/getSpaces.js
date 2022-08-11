@@ -1,9 +1,9 @@
-import { Button, Text, Link } from "@chakra-ui/react";
 import axios from "axios";
 import { useState, useEffect } from "react";
-export default function Home() {
+
+export async function getServerSideProps(context) {
   const [data, setData] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("money");
+  const [searchQuery, setSearchQuery] = useState("business");
   const [state, setState] = useState("");
   const [spaceFields, setSpaceFields] = useState("");
   const [expansions, setExpansions] = useState("");
@@ -30,20 +30,4 @@ export default function Home() {
         console.log(err);
       });
   }, []);
-  return (
-    <>
-      <Link fontSize="40px">Discover "what's happening"</Link>
-      {data.length < 1
-        ? "Loading..."
-        : data.map((item) => {
-            return (
-              <div key={item.id}>
-                <Link fontSize="20px" href={`/space/${item.id}`}>
-                  {item.title}
-                </Link>
-              </div>
-            );
-          })}
-    </>
-  );
 }
