@@ -1,29 +1,49 @@
-import { Button, Text } from "@chakra-ui/react";
+import { Button, Text, Link } from "@chakra-ui/react";
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 export default function Home() {
   const [data, setData] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("money");
+  const [state, setState] = useState("");
+  const [spaceFields, setSpaceFields] = useState("");
+  const [expansions, setExpansions] = useState("");
+  const [userFields, setUserFields] = useState("");
+  const [topicFields, setTopicFields] = useState("");
 
-  const fetchSpaces = async () => {
-    const endpoint =
-      "https://api.twitter.com/2/spaces/search?query=tech&state=live&space.fields=started_at,title,participant_count,speaker_ids&expansions=&user.fields&topic.fields";
-    const headers = {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.NEXT_PUBLIC_TWITTER_BEARER_TOKEN}`,
+  useEffect(() => {
+    console.log("fetching...");
+    const data = {
+      search: searchQuery,
+      state: "all",
+      spaceFields: "title",
+      expansions: "",
+      userFields: "",
+      topicFields: "",
     };
-    //fetch data
-    const response = await axios.get(endpoint, { headers });
-    setData(response.data);
-
-    console.log(res.data);
-  };
+    axios
+      .get("http://localhost:6600/spaces", { params: data })
+      .then((res) => {
+        setData(res.data.data);
+        console.log(res.data.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
   return (
     <>
-      <Text>
-        Chakra UI is a React UI library that provides a set of components that
-        are designed to be used together.
-      </Text>
-      <Button onClick={fetchSpaces}>Fetch Spaces</Button>
+      <Link fontSize="40px">Discover "what's happening"</Link>
+      {data.length < 1
+        ? "Loading..."
+        : data.map((item) => {
+            return (
+              <div key={item.id}>
+                <Link fontSize="20px" href={`/space/${item.id}`}>
+                  {item.title}
+                </Link>
+              </div>
+            );
+          })}
     </>
   );
 }
